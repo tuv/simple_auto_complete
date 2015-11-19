@@ -16,13 +16,8 @@ class ActionController::Base
       conditions = [condition, *values]
 
       model = object.to_s.camelize.constantize
-      find_options = {
-        :conditions => conditions,
-        :order => "#{methods.first} ASC",
-        :limit => 10
-        }.merge!(options.except(:match, :query, :mask))
 
-      @items = model.scoped(find_options)
+      @items = model.where(conditions).order(options[:order] || "#{methods.first} ASC").limit(options[:limit] || 10)
 
       out = if block_given?
         instance_exec @items, &block
